@@ -137,7 +137,7 @@ const Logins = (props) => {
                       className="link"
                       href="#javascript"
                       onClick={() => {
-                        navigate(`${process.env.PUBLIC_URL}/forgotPassword`);
+                        navigate(`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`);
                       }}
                     >
                       {ForgotPassword}

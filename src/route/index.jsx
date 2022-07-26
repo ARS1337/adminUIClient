@@ -8,10 +8,15 @@ import Signin from "../pages/authentication/login";
 import Resetpwd from "../pages/authentication/resetpwd";
 import Register from "../pages/authentication/register";
 import Forgetpwd from "../pages/authentication/forgetpwd";
+import ForgetpwdEnterNumber from "../pages/authentication/forgetpwdEnterNumber";
+import ForgetpwdEnterOTP from "../pages/authentication/forgetpwdEnterOTP";
 import { useSelector } from "react-redux";
 
 const Routers = () => {
-  const token = useSelector((state) =>{console.log('state',state);return state.Customizer.token});
+  const token = useSelector((state) => {
+    console.log("state", state);
+    return state.Customizer.token;
+  });
   const abortController = new AbortController();
   const defaultLayoutObj = classes.find(
     (item) => Object.values(item).pop(1) === "compact-wrapper"
@@ -39,15 +44,30 @@ const Routers = () => {
             />
             <Route
               exact
-              path={`${process.env.PUBLIC_URL}/forgotPassword`}
+              path={`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`}
+              element={<ForgetpwdEnterNumber />}
+            />
+            {/* <Route
+              exact
+              path={`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`}
               element={<Forgetpwd />}
+            /> */}
+            <Route
+              exact
+              path={`${process.env.PUBLIC_URL}/forgotPasswordEnterOtp`}
+              element={<ForgetpwdEnterOTP />}
+            />
+            <Route
+              exact
+              path={`${process.env.PUBLIC_URL}/resetPassword`}
+              element={<Resetpwd />}
             />
             <Route
               exact
               path={`${process.env.PUBLIC_URL}/Register`}
               element={<Register />}
             />
-            {(
+            {
               <Route
                 exact
                 path={`${process.env.PUBLIC_URL}`}
@@ -57,8 +77,8 @@ const Routers = () => {
                   />
                 }
               />
-            )}
-            { <Route path={`/*`} element={<LayoutRoutes />} />}
+            }
+            {<Route path={`/*`} element={<LayoutRoutes />} />}
           </Routes>
         </Suspense>
       </>
