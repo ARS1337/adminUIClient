@@ -20,7 +20,7 @@ const initial_state = {
   color: {},
   mix_background_layout: "",
   animation: "",
-  token: "",
+  token: "" || localStorage.getItem('token'),
   username: "",
 };
 

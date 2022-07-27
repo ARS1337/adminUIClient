@@ -11,8 +11,10 @@ import Forgetpwd from "../pages/authentication/forgetpwd";
 import ForgetpwdEnterNumber from "../pages/authentication/forgetpwdEnterNumber";
 import ForgetpwdEnterOTP from "../pages/authentication/forgetpwdEnterOTP";
 import { useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
 
 const Routers = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const token = useSelector((state) => {
     console.log("state", state);
     return state.Customizer.token;
@@ -23,6 +25,21 @@ const Routers = () => {
   );
   const layout =
     localStorage.getItem("layout") || Object.keys(defaultLayoutObj).pop();
+
+  useEffect(() => {
+    const handleInvalidToken = () => {
+      if (!localStorage.getItem('token') && window.location.href.split("/").pop() != "login") {
+        enqueueSnackbar("Please login first!", { variant: "error" });
+        window.location.href = `${process.env.PUBLIC_URL}/login`;
+      }
+    };
+
+    window.addEventListener("storage", handleInvalidToken);
+
+    return () =>{
+      window.removeEventListener("storage", handleInvalidToken);
+    };
+  }, []);
 
   useEffect(() => {
     console.ignoredYellowBox = ["Warning: Each", "Warning: Failed"];
@@ -39,7 +56,7 @@ const Routers = () => {
           <Routes>
             <Route
               exact
-              path={`${process.env.PUBLIC_URL}/login`}
+              path={`${process.env.PUBLIC_URL}/login` }
               element={<Signin />}
             />
             <Route
@@ -47,11 +64,6 @@ const Routers = () => {
               path={`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`}
               element={<ForgetpwdEnterNumber />}
             />
-            {/* <Route
-              exact
-              path={`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`}
-              element={<Forgetpwd />}
-            /> */}
             <Route
               exact
               path={`${process.env.PUBLIC_URL}/forgotPasswordEnterOtp`}

@@ -22,14 +22,14 @@ import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import config from "../../config";
-import customAxios from '../../customAxios'
+import customAxios from "../../customAxios";
 
 const Logins = (props) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => {
     console.log("state", state);
     return state.Customizer.token;
-  });
+  }) 
 
   const [togglePassword, setTogglePassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -62,7 +62,7 @@ const Logins = (props) => {
         enqueueSnackbar("an error occurred");
       }
     } catch (err) {
-      enqueueSnackbar(err.toJSON()['message']);
+      enqueueSnackbar(err.toJSON()["message"]);
       console.log(err);
     }
   };
@@ -137,7 +137,9 @@ const Logins = (props) => {
                       className="link"
                       href="#javascript"
                       onClick={() => {
-                        navigate(`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`);
+                        navigate(
+                          `${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`
+                        );
                       }}
                     >
                       {ForgotPassword}

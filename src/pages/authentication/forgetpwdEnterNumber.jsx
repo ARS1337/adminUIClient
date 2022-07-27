@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
+import axios from "axios";
 
 const ForgetpwdEnterNumber = (props) => {
   const [telno, setTelno] = useState();

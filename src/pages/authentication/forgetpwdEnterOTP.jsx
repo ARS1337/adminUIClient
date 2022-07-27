@@ -20,13 +20,15 @@ import { useNavigate } from "react-router-dom";
 import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
+import axios from "axios";
 
 const ForgetpwdEnterOTP = (props) => {
   const [otp, setotp] = useState();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleSend = async () => {
+  const handleSend = async (e) => {
+    e.preventDefault()
     let res = await customAxios.post(`${config.url}/auth/forgotPassword/checkOtp`, {
       otp: otp,
     });
@@ -81,7 +83,7 @@ const ForgetpwdEnterOTP = (props) => {
                       <Col>
                         <Input
                           className="form-control text-center opt-text"
-                          type="text"
+                          type="number"
                           placeholder="000000"
                           maxLength="6"
                           value={otp}

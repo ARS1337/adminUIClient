@@ -50,7 +50,7 @@ import {
 } from "../../constant";
 import { InputGroup, InputGroupText } from "reactstrap";
 import { classes } from "../../data/layouts";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 
 const Rightbar = () => {
@@ -67,7 +67,6 @@ const Rightbar = () => {
   const [chatDropDown, setChatDropDown] = useState(false);
   const { i18n } = useTranslation();
   const [selected, setSelected] = useState("en");
-
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     setSelected(lng);
