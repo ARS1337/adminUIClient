@@ -13,6 +13,7 @@ import {
   Minus,
   Plus,
   X,
+  Edit,
 } from "react-feather";
 import { useNavigate } from "react-router-dom";
 import { firebase_app } from "../../data/config";
@@ -47,15 +48,17 @@ import {
   ShopingBag,
   OrderTotal,
   GoToyourcart,
+  ChangePassword,
 } from "../../constant";
 import { InputGroup, InputGroupText } from "reactstrap";
 import { classes } from "../../data/layouts";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
+import Swal from "sweetalert2";
 
 const Rightbar = () => {
   const history = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const [profile, setProfile] = useState("");
   const [name, setName] = useState("");
@@ -67,6 +70,7 @@ const Rightbar = () => {
   const [chatDropDown, setChatDropDown] = useState(false);
   const { i18n } = useTranslation();
   const [selected, setSelected] = useState("en");
+  const navigate = useNavigate()
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     setSelected(lng);
@@ -85,6 +89,12 @@ const Rightbar = () => {
     i18n.changeLanguage("en");
   }, []);
 
+  const handlePasswordChange = async () => {
+    dispatch({ type: "SET_TOKEN", payload: { token: "" } });
+    localStorage.setItem("token", "");
+    navigate(`${process.env.PUBLIC_URL}/changePassword`)
+  };
+
   const Logout_From_Firebase = () => {
     localStorage.removeItem("profileURL");
     localStorage.removeItem("token");
@@ -100,9 +110,9 @@ const Rightbar = () => {
   };
 
   const logoutProfile = () => {
-    dispatch({type:"SET_TOKEN",payload:{token:""}})
+    dispatch({ type: "SET_TOKEN", payload: { token: "" } });
     localStorage.setItem("token", "");
-    enqueueSnackbar("Logged out successfully!",{variant:"success"})
+    enqueueSnackbar("Logged out successfully!", { variant: "success" });
     history(`${process.env.PUBLIC_URL}/login`);
   };
 
@@ -542,7 +552,14 @@ const Rightbar = () => {
                 </p>
               </div>
             </div>
-            <ul className="profile-dropdown onhover-show-div">
+            <ul className="profile-dropdown onhover-show-div ">
+              <li
+                className="d-flex justify-between "
+                onClick={handlePasswordChange}
+              >
+                <Edit />
+                <span className="text-wrap">{ChangePassword} </span>
+              </li>
               <li
                 onClick={() =>
                   UserMenuRedirect(

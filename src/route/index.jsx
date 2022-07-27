@@ -10,6 +10,7 @@ import Register from "../pages/authentication/register";
 import Forgetpwd from "../pages/authentication/forgetpwd";
 import ForgetpwdEnterNumber from "../pages/authentication/forgetpwdEnterNumber";
 import ForgetpwdEnterOTP from "../pages/authentication/forgetpwdEnterOTP";
+import ChangePassword from "../pages/authentication/ChangePassword";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 
@@ -28,7 +29,10 @@ const Routers = () => {
 
   useEffect(() => {
     const handleInvalidToken = () => {
-      if (!localStorage.getItem('token') && window.location.href.split("/").pop() != "login") {
+      if (
+        !localStorage.getItem("token") &&
+        window.location.href.split("/").pop() != "login"
+      ) {
         enqueueSnackbar("Please login first!", { variant: "error" });
         window.location.href = `${process.env.PUBLIC_URL}/login`;
       }
@@ -36,7 +40,7 @@ const Routers = () => {
 
     window.addEventListener("storage", handleInvalidToken);
 
-    return () =>{
+    return () => {
       window.removeEventListener("storage", handleInvalidToken);
     };
   }, []);
@@ -56,7 +60,7 @@ const Routers = () => {
           <Routes>
             <Route
               exact
-              path={`${process.env.PUBLIC_URL}/login` }
+              path={`${process.env.PUBLIC_URL}/login`}
               element={<Signin />}
             />
             <Route
@@ -73,6 +77,11 @@ const Routers = () => {
               exact
               path={`${process.env.PUBLIC_URL}/resetPassword`}
               element={<Resetpwd />}
+            />
+            <Route
+              exact
+              path={`${process.env.PUBLIC_URL}/changePassword`}
+              element={<ChangePassword />}
             />
             <Route
               exact

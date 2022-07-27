@@ -1372,6 +1372,7 @@ export const ViewAll = "View All"
 export const Admin = "Admin"
 export const Account = "Account"
 export const Taskboard = "Taskboard"
+export const ChangePassword = "Change Password"
 
 export const QuickOption = "Quick option"
 export const Document = "Document"

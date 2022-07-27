@@ -17,12 +17,12 @@ import {
   ForgotPassword,
   CreateAccount,
 } from "../../constant";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import config from "../../config";
 import customAxios from "../../customAxios";
+import Swal from 'sweetalert2'
 
 const Logins = (props) => {
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const Logins = (props) => {
 
   const [togglePassword, setTogglePassword] = useState(false);
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("test@test.com");
+  const [email, setEmail] = useState("");
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
