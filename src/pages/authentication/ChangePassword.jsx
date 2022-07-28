@@ -1,5 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
-import Breadcrumb from "../../layout/breadcrumb";
+import React, {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -9,22 +8,20 @@ import {
   FormGroup,
   Label,
   Input,
-  Button,
 } from "reactstrap";
 import {
-  Password,
-  Website,
   Save,
-  EmailAddress,
   NewPassword,
+  CurrentPassword,
 } from "../../constant";
 import { classes } from "../../data/layouts";
 import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
+import { useSelector } from "react-redux";
 
 const ChangePassword = (props) => {
-  const [email, setEmail] = useState("");
+  const email = useSelector((state) => state.Customizer.email);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const { enqueueSnackbar } = useSnackbar();
@@ -36,20 +33,29 @@ const ChangePassword = (props) => {
     localStorage.getItem("layout") || Object.keys(defaultLayoutObj).pop();
 
   const handleSave = async (e) => {
-    e.preventDefault();
-    let res = await customAxios.post(`${config.url}/auth/changePassword`, {
-      email: email,
-      password: password,
-      newPassword: newPassword,
-    });
-    if (res.data.success) {
-      enqueueSnackbar(res.data.msg, { variant: "success" });
-      enqueueSnackbar("Redirecting... please login with your new password", { variant: "success" });
-      setTimeout(() => {
-        navigate(`${process.env.PUBLIC_URL}/login`);
-      }, 500);
-    } else {
-      enqueueSnackbar(res.data.msg, { variant: "error" });
+    try {
+      e.preventDefault();
+      let res = await customAxios.post(
+        `${config.url}/protectedRoute/changePassword`,
+        {
+          email: email,
+          password: password,
+          newPassword: newPassword,
+        }
+      );
+      if (res.data.success) {
+        enqueueSnackbar(res.data.msg, { variant: "success" });
+        enqueueSnackbar("Redirecting... ", {
+          variant: "success",
+        });
+        setTimeout(() => {
+          navigate(`${process.env.PUBLIC_URL}/dashboard/default/${layout}`);
+        }, 500);
+      } else {
+        enqueueSnackbar(res.data.msg, { variant: "error" });
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -57,35 +63,12 @@ const ChangePassword = (props) => {
     <Container fluid={true} className="p-0">
       <Row className="m-0">
         <Col xs="12" className="p-0">
-          <div className="login-card">
+          <div className="login-card change-password align-items-center h-75">
             <div>
-              <div>
-                <a className="logo" href="#javascript">
-                  <img
-                    className="img-fluid for-light"
-                    src={require("../../assets/images/logo/login.png")}
-                    alt=""
-                  />
-                  <img
-                    className="img-fluid for-dark"
-                    src={require("../../assets/images/logo/logo_dark.png")}
-                    alt=""
-                  />
-                </a>
-              </div>
-              <div className="login-main login-tab">
+              <div className="login-main login-tab mt-0">
                 <Form className="theme-form">
                   <FormGroup>
-                    <Label className="form-label">{EmailAddress}</Label>
-                    <Input
-                      className="form-control"
-                      placeholder="your-email@domain.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label className="form-label">{Password}</Label>
+                    <Label className="form-label">{CurrentPassword}</Label>
                     <Input
                       className="form-control"
                       type="password"

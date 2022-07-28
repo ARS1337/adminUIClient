@@ -90,9 +90,9 @@ const Rightbar = () => {
   }, []);
 
   const handlePasswordChange = async () => {
-    dispatch({ type: "SET_TOKEN", payload: { token: "" } });
-    localStorage.setItem("token", "");
-    navigate(`${process.env.PUBLIC_URL}/changePassword`)
+    // dispatch({ type: "SET_TOKEN", payload: { token: "" } });
+    // localStorage.setItem("token", "");
+    navigate( `${process.env.PUBLIC_URL}/dashboard/changePassword/${layout}`)
   };
 
   const Logout_From_Firebase = () => {
