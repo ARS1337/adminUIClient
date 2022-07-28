@@ -22,14 +22,13 @@ import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import config from "../../config";
 import customAxios from "../../customAxios";
-import Swal from 'sweetalert2'
 
 const Logins = (props) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => {
     console.log("state", state);
     return state.Customizer.token;
-  }) 
+  });
 
   const [togglePassword, setTogglePassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -53,6 +52,7 @@ const Logins = (props) => {
       });
       if (res.data.success === 1) {
         dispatch({ type: "SET_TOKEN", payload: { token: res.data.token } });
+        dispatch({ type: "SET_EMAIL", payload: { email: email } });
         localStorage.setItem("token", res.data.token);
         enqueueSnackbar(res.data.msg, { variant: "success" });
         navigate(`${process.env.PUBLIC_URL}/dashboard/default/Dubai`);
@@ -62,7 +62,7 @@ const Logins = (props) => {
         enqueueSnackbar("an error occurred");
       }
     } catch (err) {
-      enqueueSnackbar(err.toJSON()["message"]);
+      enqueueSnackbar("an error occurred");
       console.log(err);
     }
   };

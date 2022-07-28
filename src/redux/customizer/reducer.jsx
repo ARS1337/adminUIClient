@@ -8,6 +8,7 @@ import {
   ROUTER_ANIMATION,
   SET_TOKEN,
   SET_USERNAME,
+  SET_EMAIL
 } from "../actionTypes";
 import ConfigDB from "../../data/customizer/config";
 
@@ -22,17 +23,24 @@ const initial_state = {
   animation: "",
   token: "" || localStorage.getItem('token'),
   username: "",
+  email:"" || localStorage.getItem('email')
 };
 
 const customizerReducer = (state = initial_state, action) => {
   switch (action.type) {
+    case SET_EMAIL:
+      localStorage.setItem('email',action.payload.email)
+      return {
+        ...state,
+        email:action.payload.email
+      }
     case SET_USERNAME:
       return {
         ...state,
         username: action.username,
       };
     case SET_TOKEN:
-        console.log('SET_TOKEN',action)
+      localStorage.setItem('token',action.payload.token)
       return {
         ...state,
         token: action.payload.token,

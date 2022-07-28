@@ -65,6 +65,11 @@ const Routers = () => {
             />
             <Route
               exact
+              path={`/`}
+              element={<Signin />}
+            />
+            <Route
+              exact
               path={`${process.env.PUBLIC_URL}/forgotPasswordEnterNumber`}
               element={<ForgetpwdEnterNumber />}
             />
@@ -78,11 +83,7 @@ const Routers = () => {
               path={`${process.env.PUBLIC_URL}/resetPassword`}
               element={<Resetpwd />}
             />
-            <Route
-              exact
-              path={`${process.env.PUBLIC_URL}/changePassword`}
-              element={<ChangePassword />}
-            />
+
             <Route
               exact
               path={`${process.env.PUBLIC_URL}/Register`}
