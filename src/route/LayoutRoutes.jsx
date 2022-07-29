@@ -16,7 +16,7 @@ const LayoutRoutes = () => {
 
   useEffect(() => {
     if (!token) {
-      enqueueSnackbar("Please login!", { variant: "error" });
+      // enqueueSnackbar("Please login!", { variant: "error" });
       navigate(`${process.env.PUBLIC_URL}/login`);
     }
   });

@@ -54,7 +54,8 @@ import { InputGroup, InputGroupText } from "reactstrap";
 import { classes } from "../../data/layouts";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
-import Swal from "sweetalert2";
+import customAxios from "../../customAxios";
+import config from "../../config";
 
 const Rightbar = () => {
   const history = useNavigate();
@@ -70,11 +71,12 @@ const Rightbar = () => {
   const [chatDropDown, setChatDropDown] = useState(false);
   const { i18n } = useTranslation();
   const [selected, setSelected] = useState("en");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     setSelected(lng);
   };
+  const email = useSelector((state) => state.Customizer.email);
 
   const { logout } = useAuth0();
   const authenticated = JSON.parse(localStorage.getItem("authenticated"));
@@ -92,7 +94,7 @@ const Rightbar = () => {
   const handlePasswordChange = async () => {
     // dispatch({ type: "SET_TOKEN", payload: { token: "" } });
     // localStorage.setItem("token", "");
-    navigate( `${process.env.PUBLIC_URL}/dashboard/changePassword/${layout}`)
+    navigate(`${process.env.PUBLIC_URL}/dashboard/changePassword/${layout}`);
   };
 
   const Logout_From_Firebase = () => {
@@ -109,10 +111,18 @@ const Rightbar = () => {
     logout();
   };
 
-  const logoutProfile = () => {
+  const logoutProfile = async () => {
+    let res = await customAxios.post(`${config.url}/protectedRoute/logout`, {
+      email: email,
+    });
+
+    if (res.data.success) {
+      enqueueSnackbar(res.data.msg, { variant: "success" });
+    } else {
+      enqueueSnackbar(res.data.msg, { variant: "error" });
+    }
     dispatch({ type: "SET_TOKEN", payload: { token: "" } });
     localStorage.setItem("token", "");
-    enqueueSnackbar("Logged out successfully!", { variant: "success" });
     history(`${process.env.PUBLIC_URL}/login`);
   };
 

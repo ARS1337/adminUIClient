@@ -10,4 +10,11 @@ customAxios.interceptors.request.use((config) => {
   return config;
 });
 
+customAxios.interceptors.response.use((res)=>{
+  return res
+},(err)=>{
+  console.log('fdghfghf')
+  return Promise.reject(err);
+})
+
 export default customAxios;

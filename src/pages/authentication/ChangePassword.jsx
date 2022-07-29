@@ -1,19 +1,7 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-} from "reactstrap";
-import {
-  Save,
-  NewPassword,
-  CurrentPassword,
-} from "../../constant";
+import { Container, Row, Col, Form, FormGroup, Label, Input } from "reactstrap";
+import { Save, NewPassword, CurrentPassword } from "../../constant";
 import { classes } from "../../data/layouts";
 import customAxios from "../../customAxios";
 import config from "../../config";
@@ -24,6 +12,8 @@ const ChangePassword = (props) => {
   const email = useSelector((state) => state.Customizer.email);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [togglePasswordCurrent, setTogglePasswordCurrent] = useState("");
+  const [togglePasswordConfirm, setTogglePasswordConfirm] = useState("");
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const defaultLayoutObj = classes.find(
@@ -67,7 +57,7 @@ const ChangePassword = (props) => {
             <div>
               <div className="login-main login-tab mt-0">
                 <Form className="theme-form">
-                  <FormGroup>
+                  {/* <FormGroup>
                     <Label className="form-label">{CurrentPassword}</Label>
                     <Input
                       className="form-control"
@@ -76,8 +66,56 @@ const ChangePassword = (props) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                  </FormGroup>
-                  <FormGroup>
+                  </FormGroup> */}
+
+                  <div className="mb-3 position-relative">
+                    <Label className="col-form-label">{CurrentPassword}</Label>
+                    <Input
+                      className="form-control"
+                      type={togglePasswordCurrent ? "text" : "password"}
+                      name="login[password]"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required=""
+                      placeholder="*********"
+                    />
+                    <div
+                      className="show-hide"
+                      onClick={() =>
+                        setTogglePasswordCurrent(!togglePasswordCurrent)
+                      }
+                    >
+                      <span
+                        className={togglePasswordCurrent ? "" : "show"}
+                      ></span>
+                    </div>
+                  </div>
+
+
+                  <div className="mb-3 position-relative">
+                    <Label className="col-form-label">{NewPassword}</Label>
+                    <Input
+                      className="form-control"
+                      type={togglePasswordConfirm ? "text" : "password"}
+                      name="login[password]"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required=""
+                      placeholder="*********"
+                    />
+                    <div
+                      className="show-hide"
+                      onClick={() =>
+                        setTogglePasswordConfirm(!togglePasswordConfirm)
+                      }
+                    >
+                      <span
+                        className={togglePasswordConfirm ? "" : "show"}
+                      ></span>
+                    </div>
+                  </div>
+
+                  {/* <FormGroup>
                     <Label className="form-label">{NewPassword}</Label>
                     <Input
                       className="form-control"
@@ -86,7 +124,7 @@ const ChangePassword = (props) => {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                     />
-                  </FormGroup>
+                  </FormGroup> */}
                   <div className="form-footer">
                     <button className="btn btn-primary" onClick={handleSave}>
                       {Save}
