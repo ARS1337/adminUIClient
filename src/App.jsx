@@ -8,7 +8,11 @@ import { SnackbarProvider } from "notistack";
 
 const App = () => (
   <div className="App">
-    <SnackbarProvider maxSnack={5}>
+    <SnackbarProvider
+      maxSnack={5}
+      disableWindowBlurListener={true}
+      autoHideDuration={3000}
+    >
       <Auth0Provider
         domain={auth0.domain}
         clientId={auth0.clientId}
