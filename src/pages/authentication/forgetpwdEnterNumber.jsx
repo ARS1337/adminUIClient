@@ -14,7 +14,8 @@ import { useNavigate } from "react-router-dom";
 import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
-import axios from "axios";
+import { saveNumberSchema } from "../../validationSchemas/authSchemas";
+import { validator } from "../../validationSchemas/validator";
 
 const ForgetpwdEnterNumber = (props) => {
   const [telno, setTelno] = useState();
@@ -22,12 +23,30 @@ const ForgetpwdEnterNumber = (props) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleSubmitNumber = async (e) => {
-    e.preventDefault()
-    let res = await customAxios.post(`${config.url}/auth/forgotPassword/saveNumber`, {
+  const validateForm = async (e, schema, cb) => {
+    e.preventDefault();
+    let objectToValidate = {
       telno: telno,
       prefix: prefix,
-    });
+    };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
+  };
+
+  const handleSubmitNumber = async (e) => {
+    e.preventDefault();
+    let res = await customAxios.post(
+      `${config.url}/auth/forgotPassword/saveNumber`,
+      {
+        telno: telno,
+        prefix: prefix,
+      }
+    );
     if (res.data.success) {
       navigate(`${process.env.PUBLIC_URL}/forgotPasswordEnterOtp`);
     } else {
@@ -86,7 +105,13 @@ const ForgetpwdEnterNumber = (props) => {
                           color="primary"
                           className="m-t-10"
                           type="submit"
-                          onClick={handleSubmitNumber}
+                          onClick={(e) => {
+                            validateForm(
+                              e,
+                              saveNumberSchema,
+                              handleSubmitNumber
+                            );
+                          }}
                         >
                           {Send}
                         </Button>

@@ -7,6 +7,8 @@ import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
 import { useSelector } from "react-redux";
+import { validator } from "../../validationSchemas/validator";
+import { changePasswordSchema } from "../../validationSchemas/authSchemas";
 
 const ChangePassword = (props) => {
   const email = useSelector((state) => state.Customizer.email);
@@ -21,6 +23,22 @@ const ChangePassword = (props) => {
   );
   const layout =
     localStorage.getItem("layout") || Object.keys(defaultLayoutObj).pop();
+
+  const validateForm = async (e, schema, cb) => {
+    e.preventDefault()
+    let objectToValidate = {
+      email: email,
+      password: password,
+      newPassword: newPassword,
+    };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
+  };
 
   const handleSave = async (e) => {
     try {
@@ -57,23 +75,12 @@ const ChangePassword = (props) => {
             <div>
               <div className="login-main login-tab mt-0">
                 <Form className="theme-form">
-                  {/* <FormGroup>
-                    <Label className="form-label">{CurrentPassword}</Label>
-                    <Input
-                      className="form-control"
-                      type="password"
-                      placeholder="**********"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </FormGroup> */}
-
                   <div className="mb-3 position-relative">
                     <Label className="col-form-label">{CurrentPassword}</Label>
                     <Input
                       className="form-control"
                       type={togglePasswordCurrent ? "text" : "password"}
-                      name="login[password]"
+                      name="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required=""
@@ -91,13 +98,12 @@ const ChangePassword = (props) => {
                     </div>
                   </div>
 
-
                   <div className="mb-3 position-relative">
                     <Label className="col-form-label">{NewPassword}</Label>
                     <Input
                       className="form-control"
                       type={togglePasswordConfirm ? "text" : "password"}
-                      name="login[password]"
+                      name="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required=""
@@ -114,19 +120,13 @@ const ChangePassword = (props) => {
                       ></span>
                     </div>
                   </div>
-
-                  {/* <FormGroup>
-                    <Label className="form-label">{NewPassword}</Label>
-                    <Input
-                      className="form-control"
-                      type="password"
-                      placeholder="**********"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                  </FormGroup> */}
                   <div className="form-footer">
-                    <button className="btn btn-primary" onClick={handleSave}>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        validateForm(e, changePasswordSchema, handleSave);
+                      }}
+                    >
                       {Save}
                     </button>
                   </div>

@@ -22,14 +22,15 @@ import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
 import config from "../../config";
 import customAxios from "../../customAxios";
+import { loginSchema } from "../../validationSchemas/authSchemas";
+import { validator } from "../../validationSchemas/validator";
 
 const Logins = (props) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => {
-    console.log("state", state);
     return state.Customizer.token;
   });
-
+  const [errors, setErrors] = useState([]);
   const [togglePassword, setTogglePassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -42,9 +43,21 @@ const Logins = (props) => {
     }
   }, []);
 
+  const validateForm = async (e,schema, cb) => {
+    let objectToValidate = { email: email, password: password };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       let url = `${config.url}/auth/login`;
       let res = await customAxios.post(url, {
         email: email,
@@ -145,7 +158,12 @@ const Logins = (props) => {
                       {ForgotPassword}
                     </a>
 
-                    <Button color="primary" onClick={handleSubmit}>
+                    <Button
+                      color="primary"
+                      onClick={(e) => {
+                        validateForm(e, loginSchema, handleSubmit);
+                      }}
+                    >
                       {SignIn}
                     </Button>
                   </div>

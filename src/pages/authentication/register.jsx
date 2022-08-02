@@ -18,10 +18,11 @@ import {
   PrivacyPolicy,
 } from "../../constant";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
 import customAxios from "../../customAxios";
+import { createAccountSchema } from "../../validationSchemas/authSchemas";
+import { validator } from "../../validationSchemas/validator";
 
 const Register = (props) => {
   const [togglePassword, setTogglePassword] = useState(false);
@@ -35,6 +36,24 @@ const Register = (props) => {
 
   const HideShowPassword = (tPassword) => {
     setTogglePassword(!tPassword);
+  };
+
+  const validateForm = async (e, schema, cb) => {
+    e.preventDefault();
+    let objectToValidate = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password,
+      policyAccepted: policyAccepted,
+    };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
   };
 
   const handleCreateAccount = async (e) => {
@@ -164,7 +183,7 @@ const Register = (props) => {
                     <Button
                       color="primary"
                       type="submit"
-                      onClick={handleCreateAccount}
+                      onClick={(e)=>{validateForm(e,createAccountSchema,handleCreateAccount)}}
                     >
                       {CreateAccount}
                     </Button>

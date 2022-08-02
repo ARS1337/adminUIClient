@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Container,
   Row,
@@ -11,6 +11,8 @@ import {
 } from "reactstrap";
 import {
   EnterOTP,
+  OtpDiable,
+  OtpDisable,
   Resend,
   ResetPassword,
   SignIn,
@@ -20,18 +22,59 @@ import { useNavigate } from "react-router-dom";
 import customAxios from "../../customAxios";
 import config from "../../config";
 import { useSnackbar } from "notistack";
-import axios from "axios";
+import { checkOtpSchema } from "../../validationSchemas/authSchemas";
+import { validator } from "../../validationSchemas/validator";
+import { debounce } from "lodash";
 
 const ForgetpwdEnterOTP = (props) => {
   const [otp, setotp] = useState();
+  const [disableOtpButton, setDisableotpButton] = useState(false);
+  const [timer, setTimer] = useState(0);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleSend = async (e) => {
-    e.preventDefault()
-    let res = await customAxios.post(`${config.url}/auth/forgotPassword/checkOtp`, {
+  const validateForm = async (e, schema, cb) => {
+    e.preventDefault();
+    let objectToValidate = {
       otp: otp,
-    });
+    };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
+  };
+
+  useEffect(() => {
+    let timerId
+    if (disableOtpButton) {
+      setTimer(30);
+      timerId = setInterval(() => {
+        setTimer((timer) => timer - 1);
+      }, 1000);
+      setDisableotpButton(true);
+      debounce(getNewOtp, 500, { leading: true })();
+      setTimeout(() => {
+        setDisableotpButton(false);
+        clearInterval(timerId);
+        setTimer(30);
+      }, 30 * 1000);
+    }
+    return ()=>{clearInterval(timerId)}
+  }, [disableOtpButton]);
+
+  const handleResend = () => {setDisableotpButton(true)};
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    let res = await customAxios.post(
+      `${config.url}/auth/forgotPassword/checkOtp`,
+      {
+        otp: otp,
+      }
+    );
     if (res.data.success) {
       navigate(`${process.env.PUBLIC_URL}/resetPassword`);
     } else {
@@ -40,9 +83,13 @@ const ForgetpwdEnterOTP = (props) => {
   };
 
   const getNewOtp = async () => {
-    let res = await customAxios(`${config.url}/auth/getotp`);
+    let res = await customAxios.post(
+      `${config.url}/auth/forgotPassword/getNewOtp`
+    );
     if (res.data.success) {
-      enqueueSnackbar("Another OTP Sent!", { variant: "success" });
+      enqueueSnackbar(res.data.msg, { variant: "success" });
+    } else {
+      enqueueSnackbar(res.data.msg, { variant: "error" });
     }
   };
 
@@ -69,14 +116,20 @@ const ForgetpwdEnterOTP = (props) => {
               <div className="login-main">
                 <Form className="theme-form">
                   <h4>{ResetPassword}</h4>
-                  <div className="text-left mt-4 mb-4" onClick={getNewOtp}>
-                    <span className="reset-password-link">
-                      {"If don't receive OTP?"}  
-                      <a className="btn-link font-danger" href="#javascript">
-                        {Resend}
-                      </a>
-                    </span>
-                  </div>
+                  {disableOtpButton ? (
+                    <div className="text-left mt-4 mb-4">
+                      {OtpDisable + timer + " sec"}
+                    </div>
+                  ) : (
+                    <div className="text-left mt-4 mb-4" onClick={handleResend}>
+                      <span className="reset-password-link">
+                        {"If don't receive OTP?"}  
+                        <a className="btn-link font-danger" href="#javascript">
+                          {Resend}
+                        </a>
+                      </span>
+                    </div>
+                  )}
                   <FormGroup>
                     <Label className="col-form-label pt-0 ">{EnterOTP}</Label>
                     <Row>
@@ -96,7 +149,12 @@ const ForgetpwdEnterOTP = (props) => {
                     <Row>
                       {/* <Col className=""></Col> */}
                       <Col className="">
-                        <Button onClick={handleSend} color="primary">
+                        <Button
+                          onClick={(e) => {
+                            validateForm(e, checkOtpSchema, handleSend);
+                          }}
+                          color="primary"
+                        >
                           Send
                         </Button>
                       </Col>

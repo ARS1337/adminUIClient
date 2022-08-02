@@ -19,15 +19,30 @@ import {
   CreateAccount,
 } from "../../constant";
 import customAxios from "../../customAxios";
+import { resetPasswordSchema } from "../../validationSchemas/authSchemas";
+import { validator } from "../../validationSchemas/validator";
 
 const Resetpwd = (props) => {
   const [togglePassword, setTogglePassword] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
   const { enqueueSnackbar } = useSnackbar();
+  const [togglePasswordCurrent, setTogglePasswordCurrent] = useState("");
+  const [togglePasswordConfirm, setTogglePasswordConfirm] = useState("");
 
-  const HideShowPassword = (tPassword) => {
-    setTogglePassword(!tPassword);
+  const validateForm = async (e, schema, cb) => {
+    e.preventDefault();
+    let objectToValidate = {
+      password: password,
+      confirmPassword: confirmPassword,
+    };
+    let validationResult = await validator(schema, objectToValidate);
+    console.log(validationResult);
+    if (validationResult.success) {
+      cb(e);
+    } else {
+      enqueueSnackbar(validationResult.msg, { variant: "error" });
+    }
   };
 
   const handleReset = async (e) => {
@@ -42,11 +57,11 @@ const Resetpwd = (props) => {
     if (res.data.success) {
       enqueueSnackbar("Password Reset Successfull!", { variant: "success" });
       enqueueSnackbar("Redirecting to Login page", { variant: "info" });
-      setTimeout(()=>{
-        window.location.href=`${process.env.PUBLIC_URL}/login`
-      },500)
-    }else{
-      enqueueSnackbar(res.data.msg,{variant:'error'})
+      setTimeout(() => {
+        window.location.href = `${process.env.PUBLIC_URL}/login`;
+      }, 500);
+    } else {
+      enqueueSnackbar(res.data.msg, { variant: "error" });
     }
   };
 
@@ -73,7 +88,7 @@ const Resetpwd = (props) => {
               <div className="login-main">
                 <Form className="theme-form">
                   <h4>{"Create Your Password"}</h4>
-                  <FormGroup>
+                  {/* <FormGroup>
                     <Label className="col-form-label">{NewPassword}</Label>
                     <Input
                       className="form-control"
@@ -90,19 +105,51 @@ const Resetpwd = (props) => {
                     >
                       <span className={togglePassword ? "" : "show"}></span>
                     </div>
-                  </FormGroup>
-                  <FormGroup>
+                  </FormGroup> */}
+                  <div className="mb-3 position-relative">
+                    <Label className="col-form-label">{NewPassword}</Label>
+                    <Input
+                      className="form-control"
+                      type={togglePasswordCurrent ? "text" : "password"}
+                      name="login[password]"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required=""
+                      placeholder="*********"
+                    />
+                    <div
+                      className="show-hide"
+                      onClick={() =>
+                        setTogglePasswordCurrent(!togglePasswordCurrent)
+                      }
+                    >
+                      <span
+                        className={togglePasswordCurrent ? "" : "show"}
+                      ></span>
+                    </div>
+                  </div>
+                  <div className="mb-3 position-relative">
                     <Label className="col-form-label">{RetypePassword}</Label>
                     <Input
                       className="form-control"
-                      type="password"
+                      type={togglePasswordConfirm ? "text" : "password"}
                       name="login[password]"
                       value={confirmPassword}
                       onChange={(e) => setconfirmPassword(e.target.value)}
                       required=""
                       placeholder="*********"
                     />
-                  </FormGroup>
+                    <div
+                      className="show-hide"
+                      onClick={() =>
+                        setTogglePasswordConfirm(!togglePasswordConfirm)
+                      }
+                    >
+                      <span
+                        className={togglePasswordConfirm ? "" : "show"}
+                      ></span>
+                    </div>
+                  </div>
                   <FormGroup className="mb-0">
                     <div className="checkbox ms-3">
                       <Input id="checkbox1" type="checkbox" />
@@ -110,7 +157,7 @@ const Resetpwd = (props) => {
                         {RememberPassword}
                       </Label>
                     </div>
-                    <Button color="primary" type="submit" onClick={handleReset}>
+                    <Button color="primary" type="submit" onClick={(e)=>{validateForm(e,resetPasswordSchema,handleReset)}}>
                       {Done}
                     </Button>
                   </FormGroup>
